@@ -1,0 +1,22 @@
+O objetivo desse exemplo é simular uma rede de sensores, em que o nó 
+estação-base irá gerar um flood na rede para montar uma estrutura de 
+roteamento em árvore.
+
+1  Como executar o exemplo
+Colocar 200 nós na área de simulação.
+
+Na tela de criação de nós, escolha como implementação de nó a classe 
+“SimpleNode”
+
+Clique no botão Run.
+
+Perceba que o única evento que ocorreu foi a montagem do grafo de conectividade,
+ou seja, qual nó está ao alcance do rádio de outro nó
+
+Pare a simulação, clicando no botão “Abort Simulation”
+
+Em seguida, escolha um nó da rede qualquer para ser a estação base.
+
+Clique, em cima do nó escolhido, com o botão direito. Ao aparecer o menu popup 
+clique na opção “Construir arvore de roteamento” Esse método será disparado no 
+próximo round, ou seja, quando o botão Run for clicado

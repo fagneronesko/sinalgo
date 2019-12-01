@@ -5,6 +5,7 @@
  */
 package projects.wsn1.nodes.nodeImplementations;
 
+import java.util.Random;
 import projects.wsn1.nodes.messages.WsnMsg;
 import projects.wsn1.nodes.timers.WsnMessageTimer;
 import sinalgo.configuration.WrongConfigurationException;
@@ -17,15 +18,16 @@ import sinalgo.nodes.messages.Message;
  * @author pozza
  */
 public class SimpleNode extends Node {
+    
     private final int NUMERO_ROUNDS = 100;
     private int contadorRounds = 0;
-    private boolean retornoMsg = false;
     private Node proximoNoAteEstacaoBase;
     private Integer sequenceNumber = 0;
 
     @Override
     public void handleMessages(Inbox inbox) {
         while (inbox.hasNext()) {
+            
             Message message = inbox.next();
             if (message instanceof WsnMsg) {
                 Boolean encaminhar = Boolean.TRUE;
@@ -48,10 +50,16 @@ public class SimpleNode extends Node {
                         encaminhar = Boolean.FALSE;
                     }
                 } else if (wsnMessage.tipoMsg == 1) {
-                    System.out.println("O noh " + wsnMessage.origem.ID + " esta mandando mensagem de retorno para o Sink");
-                    wsnMessage.forwardingHop = this;
-                    sendDirect(wsnMessage, proximoNoAteEstacaoBase);
+                    
                     encaminhar = Boolean.FALSE;
+                    wsnMessage.forwardingHop = this;
+                    
+                    if(contadorRounds >= NUMERO_ROUNDS){
+                        System.out.println("O noh " + wsnMessage.origem.ID + " esta mandando mensagem de retorno para o Sink");
+                        System.out.println("cont: "+contadorRounds);
+                        sendDirect(wsnMessage, proximoNoAteEstacaoBase);contadorRounds = 0;
+                        contadorRounds = 0;                        
+                    }                                   
                 }
                 if (encaminhar) {
                     //Devemos alterar o campo forwardingHop(da mensagem) para armazenar o
@@ -66,11 +74,9 @@ public class SimpleNode extends Node {
     @Override
     public void preStep() {
         contadorRounds ++;
-        if(!retornoMsg && proximoNoAteEstacaoBase != null && contadorRounds >= NUMERO_ROUNDS) {
-    	   retornoMsg = true;
+        if(proximoNoAteEstacaoBase != null && contadorRounds >= NUMERO_ROUNDS) {
     	   WsnMsg wsnMessage = new WsnMsg(1, this, proximoNoAteEstacaoBase, this, 1);
     	   sendDirect(wsnMessage, proximoNoAteEstacaoBase);
-           contadorRounds = 0;
        }
     }
 

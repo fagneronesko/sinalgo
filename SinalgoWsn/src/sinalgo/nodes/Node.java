@@ -481,7 +481,6 @@ public abstract class Node implements DoublyLinkedListEntry{
 		packet.type = PacketType.UNICAST;
 
 		Global.numberOfMessagesInThisRound++; // statistics
-		
 		if(Global.isAsynchronousMode) {
 			// add a packet event to the event list
 			Runtime.eventQueue.insert(PacketEvent.getNewPacketEvent(packet, Global.currentTime + transmissionTime));			

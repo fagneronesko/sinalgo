@@ -43,6 +43,8 @@ public class SinkNode extends Node {
                     } else {
                         encaminhar = Boolean.FALSE;
                     }
+                } else if (wsnMessage.tipoMsg == 1){
+                    System.out.println("O noh " + wsnMessage.origem.ID + " esta mandando mensagem de retorno para o Sink");
                 } 
                 if (encaminhar) {
                     //Devemos alterar o campo forwardingHop(da mensagem) para armazenar o

@@ -18,11 +18,12 @@ import sinalgo.nodes.messages.Message;
  * @author pozza
  */
 public class SimpleNode extends Node {
-    
-    private final int NUMERO_ROUNDS = 100;
-    private int contadorRounds = 0;
+   
+    private final Integer INICIO_INTERVALO = 100;
+    private final Integer FIM_INTERVALO    = 200;
     private Node proximoNoAteEstacaoBase;
     private Integer sequenceNumber = 0;
+    private boolean enviando = true;
 
     @Override
     public void handleMessages(Inbox inbox) {
@@ -50,16 +51,10 @@ public class SimpleNode extends Node {
                         encaminhar = Boolean.FALSE;
                     }
                 } else if (wsnMessage.tipoMsg == 1) {
-                    
-                    encaminhar = Boolean.FALSE;
+                    sendDirect(wsnMessage, proximoNoAteEstacaoBase);
                     wsnMessage.forwardingHop = this;
-                    
-                    if(contadorRounds >= NUMERO_ROUNDS){
-                        System.out.println("O noh " + wsnMessage.origem.ID + " esta mandando mensagem de retorno para o Sink");
-                        System.out.println("cont: "+contadorRounds);
-                        sendDirect(wsnMessage, proximoNoAteEstacaoBase);contadorRounds = 0;
-                        contadorRounds = 0;                        
-                    }                                   
+                    encaminhar = Boolean.FALSE;                   
+                                              
                 }
                 if (encaminhar) {
                     //Devemos alterar o campo forwardingHop(da mensagem) para armazenar o
@@ -70,13 +65,22 @@ public class SimpleNode extends Node {
             }
         }
     }
+    
+     public void setEnviando(Boolean enviando) {
+        this.enviando = enviando;
+    }
+
+    public Node proximoNoAteEstacaoBase() {
+        return this.proximoNoAteEstacaoBase;
+    }
 
     @Override
     public void preStep() {
-        contadorRounds ++;
-        if(proximoNoAteEstacaoBase != null && contadorRounds >= NUMERO_ROUNDS) {
-    	   WsnMsg wsnMessage = new WsnMsg(1, this, proximoNoAteEstacaoBase, this, 1);
-    	   sendDirect(wsnMessage, proximoNoAteEstacaoBase);
+        if(proximoNoAteEstacaoBase != null && enviando) {
+    	   WsnMsg wsnMessage = new WsnMsg(1, this, null, this, 1);
+           WsnMessageTimer wsnMessageTimer = new WsnMessageTimer(wsnMessage);
+           wsnMessageTimer.startRelative(new Random().nextInt(INICIO_INTERVALO) + (FIM_INTERVALO - INICIO_INTERVALO), this);
+           enviando = false;
        }
     }
 

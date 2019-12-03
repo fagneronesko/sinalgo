@@ -24,7 +24,11 @@ public class WsnMessageTimer extends Timer {
 
     @Override
     public void fire() {
-        ((SinkNode)node).broadcast(message);
+        try {
+            ((SimpleNode)node).setEnviando(true);
+            ((SimpleNode)node).sendDirect(message, ((SimpleNode)node).proximoNoAteEstacaoBase());
+        }catch (ClassCastException ex) {
+            ((SinkNode)node).broadcast(message);
+        }
     }
-
 }
